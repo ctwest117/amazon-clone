@@ -1,1 +1,25 @@
 @import "tailwindcss";
+
+.bg-amazon-blue-900{
+    background-color: #232f3e;
+}
+
+.bg-amazon-orange {
+    background-color: #ff9900;
+}
+
+.bg-amazon-orange-faded {
+    background-color: #ffbb77;
+}
+
+.bg-amazon-orange-hover {
+    background-color: #ff0000;
+}
+
+.text-amazon-orange {
+    color: #ff9900;
+}
+
+/* .w-clamp{
+    
+} */
