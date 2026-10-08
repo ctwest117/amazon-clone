@@ -12,8 +12,8 @@
     background-color: #ffbb77;
 }
 
-.bg-amazon-orange-hover {
-    background-color: #ff0000;
+.bg-amazon-orange-hover:hover {
+    background-color: #ff9966;
 }
 
 .text-amazon-orange {
