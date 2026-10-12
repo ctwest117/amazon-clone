@@ -1,38 +1,70 @@
 import "./style.css";
 import { renderHeader } from "./header/header";
 import { renderProducts } from "./pages/products";
-import { cart, loadCart, saveCart } from "./cart/cart";
+import {
+  loadCart,
+  cartRendered,
+  cartIsRendered,
+  subtract,
+  add,
+  toggleCartRendered,
+  saveCart,
+} from "./cart/cart";
 import { products } from "./data/products";
+import { renderCart } from "./pages/cart";
 
 // Variables
-const app = document.getElementById("app");
+export const app = document.getElementById("app");
 
 // Event Listeners
 
 app.addEventListener("click", (event) => {
   const btn = event.target.closest("button");
-  const card = btn.closest("div");
-  if (btn) {
-    const prod = products.find((a) => a.id == card.dataset.id);
-    if (!prod) return;
-    if (cart.some((item) => item.id === prod.id)) {
-      prod.count++;
-      console.log(prod);
-    } else {
-      prod.count = 1;
-      cart.push(prod);
-    }
+  if (!btn) return;
+
+  if (btn.dataset.action == "subtract") {
+    console.log(btn.dataset.id, btn.dataset.action);
+    subtract(btn.dataset.id);
+    return;
+  }
+  if (btn.dataset.action == "add") {
+    console.log(btn.dataset.id, btn.dataset.action);
+    add(btn.dataset.id);
     const added = setTimeout(() => {
-      btn.innerText = "Add to Cart";
+      btn.innerText = cartRendered ? "+" : "Add to Cart";
     }, 700);
     added;
     btn.innerText = "Added!";
-    renderHeader();
+    return;
   }
 });
 
-// window.addEventListener("beforeunload", saveCart());
+export function addListener() {
+  const cartBtn = document.getElementById("cartBtn");
+  cartBtn.addEventListener("click", () => {
+    // console.log(cartBtn);
+    if (cartRendered) {
+      renderProducts();
+    } else {
+      renderCart();
+    }
+    toggleCartRendered();
+    cartIsRendered();
+  });
+  const logoBtn = document.getElementById("logo");
+  logoBtn.addEventListener("click", () => {
+    if (cartRendered) toggleCartRendered();
+    cartIsRendered();
+    window.location.href = "./index.html";
+  });
+}
 
 if (localStorage.getItem("CART-KEYS")) loadCart();
-renderProducts();
 renderHeader();
+if (cartRendered) {
+  renderCart();
+} else {
+  renderProducts();
+}
+window.products = products;
+console.log(cartRendered);
