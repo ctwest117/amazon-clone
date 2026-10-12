@@ -1,20 +1,23 @@
 import "./style.css";
 import { renderHeader } from "./header/header";
 import { renderProducts } from "./pages/products";
-import { cart, saveCart } from "./cart/cart";
+import { cart, loadCart, saveCart } from "./cart/cart";
 import { products } from "./data/products";
 
 // Variables
 const app = document.getElementById("app");
 
 // Event Listeners
+
 app.addEventListener("click", (event) => {
   const btn = event.target.closest("button");
+  const card = btn.closest("div");
   if (btn) {
-    const prod = products.find((a) => a.id == btn.dataset.id);
+    const prod = products.find((a) => a.id == card.dataset.id);
     if (!prod) return;
     if (cart.some((item) => item.id === prod.id)) {
       prod.count++;
+      console.log(prod);
     } else {
       prod.count = 1;
       cart.push(prod);
@@ -24,11 +27,12 @@ app.addEventListener("click", (event) => {
     }, 700);
     added;
     btn.innerText = "Added!";
-    console.log(cart);
     renderHeader();
   }
 });
 
-window.addEventListener("beforeunload", saveCart());
+// window.addEventListener("beforeunload", saveCart());
+
+if (localStorage.getItem("CART-KEYS")) loadCart();
 renderProducts();
 renderHeader();

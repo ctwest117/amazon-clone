@@ -1,4 +1,4 @@
-import { cart, loadCart } from "../cart/cart";
+import { cart, loadCart, saveCart } from "../cart/cart";
 
 const header = document.querySelector("header");
 
@@ -13,12 +13,13 @@ export const renderHeader = () => {
                 <button class="bg-amazon-orange-faded h-[clamp(2.5rem,2.5rem,3rem)] w-12 bg-[url(src/assets/search-icon.png)] bg-center bg-size-[80%] bg-no-repeat rounded-r hover:bg-amazon-orange-hover cursor-pointer"></button>
             </div>
             <button type='button' id='cartBtn' class="flex justify-center items-center mx-5 hover:outline rounded hover:outline-white cursor-pointer hover:-translate-y-0.5">
-                <div class="flex justify-center items-start px-5 h-[clamp(2.5rem,2.5rem,3rem)] w-15 bg-[url(src/assets/nav-sprite-cart.png)] bg-no-repeat bg-center bg-size-[80%] text-amazon-orange">${cart.reduce((t, v) => t + v.count, 0)}</div>
+                <div class="flex justify-center items-start px-5 h-[clamp(2.5rem,2.5rem,3rem)] w-15 bg-[url(src/assets/nav-sprite-cart.png)] bg-no-repeat bg-center bg-size-[80%] text-amazon-orange text-left">${cart.reduce((t, v) => t + v.count, 0)}</div>
                 <span class="text-white p-0 mt-auto -translate-x-3">Cart</span>
             </button>
             
         </div>
         `;
+  saveCart();
   window.cart = cart;
   const cartBtn = document.getElementById("cartBtn");
   cartBtn.addEventListener("click", (event) => {
