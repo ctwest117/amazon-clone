@@ -9,7 +9,7 @@ export function renderProducts() {
   container.innerHTML = products
     .map(
       (product) => /*html*/ `
-    <div data-id='${product.id}' class="flex flex-col justify-around items-center w-auto lg:h-100 min-h-fit bg-amazon-gray gap-4 py-5 rounded-2xl">
+    <div data-id='${product.id}' class="flex flex-col justify-around items-center w-auto lg:h-100 min-h-fit bg-amazon-gray-100 gap-4 py-5 rounded-2xl">
         <img src=${product.image} alt="${product.name}" class='w-auto h-[50%] aspect-square'>
         <h2 class="font-bold">${formatPrice(product.price)}</h2>
         <h1 class="text-amazon-blue-600 hover:text-amazon-orange cursor-pointer text-lg  text-left">${product.name}</h1>

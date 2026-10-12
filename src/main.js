@@ -8,10 +8,12 @@ import {
   subtract,
   add,
   toggleCartRendered,
-  saveCart,
+  cart,
 } from "./cart/cart";
 import { products } from "./data/products";
 import { renderCart } from "./pages/cart";
+import { formatPrice } from "./utils/currency";
+import { renderCheckout } from "./pages/checkout";
 
 // Variables
 export const app = document.getElementById("app");
@@ -22,19 +24,27 @@ app.addEventListener("click", (event) => {
   const btn = event.target.closest("button");
   if (!btn) return;
 
+  if (btn.dataset.action == "delete") {
+    const item = cart.find((a) => a.id == btn.dataset.id);
+    item.count = 0;
+    subtract(btn.dataset.id);
+    return;
+  }
   if (btn.dataset.action == "subtract") {
-    console.log(btn.dataset.id, btn.dataset.action);
     subtract(btn.dataset.id);
     return;
   }
   if (btn.dataset.action == "add") {
-    console.log(btn.dataset.id, btn.dataset.action);
     add(btn.dataset.id);
     const added = setTimeout(() => {
       btn.innerText = cartRendered ? "+" : "Add to Cart";
     }, 700);
     added;
     btn.innerText = "Added!";
+    return;
+  }
+  if (btn.dataset.action == "checkout") {
+    renderCheckout();
     return;
   }
 });
@@ -57,8 +67,32 @@ export function addListener() {
     cartIsRendered();
     window.location.href = "./index.html";
   });
-}
 
+  const searchInput = document.getElementById("searchbar");
+  const searchList = document.getElementById("search-list");
+  searchList.addEventListener("click", (event) => {
+    const btn = event.target.closest("BUTTON");
+    add(btn.dataset.id);
+  });
+  searchInput.addEventListener("keyup", () => {
+    const query = searchInput.value.trim().toLowerCase();
+    const matches = products.filter((product) =>
+      product.name.toLowerCase().includes(query),
+    );
+    if (query.length < 1) {
+      searchList.innerHTML = "";
+      return;
+    }
+
+    searchList.innerHTML = matches
+      .map((product) => {
+        return /* html */ `
+      <li class="w-full flex justify-between bg-white border-b border-b-amazon-gray-100 px-5"><button type='button' data-id="${product.id}" class="h-20 cursor-pointer hover:text-amazon-orange">${product.name}<button><span class="text-red-700">Price: ${formatPrice(product.price)}</span></li>
+    `;
+      })
+      .join("");
+  });
+}
 if (localStorage.getItem("CART-KEYS")) loadCart();
 renderHeader();
 if (cartRendered) {
@@ -67,4 +101,3 @@ if (cartRendered) {
   renderProducts();
 }
 window.products = products;
-console.log(cartRendered);
