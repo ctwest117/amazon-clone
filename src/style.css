@@ -1,25 +1,27 @@
 @import "tailwindcss";
 
-.bg-amazon-blue-900{
-    background-color: #232f3e;
+@font-face {
+  font-family: "Amazon Ember";
+  src: url("./assets/fonts/AmazonEmber_Rg.ttf") format("truetype");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
 }
 
-.bg-amazon-orange {
-    background-color: #ff9900;
+@font-face {
+  font-family: "Amazon Ember";
+  src: url("./assets/fonts/AmazonEmber_Bd.ttf") format("truetype");
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
 }
 
-.bg-amazon-orange-faded {
-    background-color: #ffbb77;
+@theme {
+  --font-amazon-ember: "Amazon Ember", sans-serif;
+  --color-amazon-blue-900: #232f3e;
+  --color-amazon-orange: #ff9900;
+  --color-amazon-orange-faded: #ffbb77;
+  --color-amazon-orange-hover: #ff9966;
+  --color-amazon-yellow: #ffd814;
+  --color-amazon-gray: #f7f8f8;
 }
-
-.bg-amazon-orange-hover:hover {
-    background-color: #ff9966;
-}
-
-.text-amazon-orange {
-    color: #ff9900;
-}
-
-/* .w-clamp{
-    
-} */
