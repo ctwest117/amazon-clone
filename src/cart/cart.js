@@ -1,13 +1,9 @@
 import { products } from "../data/products";
-import { renderHeader } from "../header/header";
+import { updateCartButton } from "../header/header";
 import { renderCart } from "../pages/cart";
 
 export let cart = [];
 export let cartRendered = false;
-
-export function toggleCartRendered() {
-  cartRendered = !cartRendered;
-}
 
 function setItem(key, value) {
   localStorage.setItem(key, value);
@@ -25,43 +21,71 @@ export function loadCart() {
   cart = getItem("CART-KEYS");
 }
 
-export function cartIsRendered() {
+export function setCartRendered(isRendered) {
+  cartRendered = isRendered;
   setItem("CART-RENDERED", JSON.stringify(cartRendered));
 }
 
-export function getCartIsRendered() {
-  return getItem("CART-RENDERED");
+try {
+  const savedCartRendered = JSON.parse(localStorage.getItem("CART-RENDERED"));
+  if (typeof savedCartRendered === "boolean") {
+    cartRendered = savedCartRendered;
+  }
+} catch {
+  cartRendered = false;
 }
 
-const savedCartRendered = getCartIsRendered();
-if (savedCartRendered !== null) cartRendered = savedCartRendered;
+function refreshCartButton() {
+  updateCartButton(cart.reduce((total, product) => total + product.count, 0));
+}
+
+function parseProductId(id) {
+  if (id === null || id === undefined || String(id).trim() === "") return null;
+  const productId = Number(id);
+  return Number.isInteger(productId) ? productId : null;
+}
 
 export function subtract(id) {
-  if (!id) return;
-  const prod = cart.find((a) => a.id == id);
+  const productId = parseProductId(id);
+  if (productId === null) return;
+  const prod = cart.find((item) => item.id === productId);
+  if (!prod) return;
+
   if (prod.count > 1) {
     prod.count--;
   } else {
-    cart = cart.filter((a) => a.id !== prod.id);
+    cart = cart.filter((item) => item.id !== prod.id);
   }
-  renderHeader();
+  refreshCartButton();
   if (cartRendered) renderCart();
   saveCart();
-  window.cart = cart;
+}
+
+export function remove(id) {
+  const productId = parseProductId(id);
+  if (productId === null) return;
+  const productExists = cart.some((item) => item.id === productId);
+  if (!productExists) return;
+
+  cart = cart.filter((item) => item.id !== productId);
+  refreshCartButton();
+  if (cartRendered) renderCart();
+  saveCart();
 }
 
 export function add(id) {
-  if (!id) return;
-  const prod = cart.find((a) => a.id == id);
-  const fromProd = products.find((a) => a.id == id);
+  const productId = parseProductId(id);
+  if (productId === null) return;
+  const prod = cart.find((item) => item.id === productId);
+  const fromProd = products.find((item) => item.id === productId);
+  if (!fromProd) return;
+
   if (!prod) {
-    cart.push(fromProd);
-    cart.find((a) => a.id == id).count++;
+    cart.push({ ...fromProd, count: 1 });
   } else {
     prod.count++;
   }
-  renderHeader();
+  refreshCartButton();
   if (cartRendered) renderCart();
   saveCart();
-  window.cart = cart;
 }

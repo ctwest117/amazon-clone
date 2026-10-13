@@ -4,10 +4,10 @@ import { renderProducts } from "./pages/products";
 import {
   loadCart,
   cartRendered,
-  cartIsRendered,
+  setCartRendered,
   subtract,
   add,
-  toggleCartRendered,
+  remove,
   cart,
 } from "./cart/cart";
 import { products } from "./data/products";
@@ -25,9 +25,7 @@ app.addEventListener("click", (event) => {
   if (!btn) return;
 
   if (btn.dataset.action == "delete") {
-    const item = cart.find((a) => a.id == btn.dataset.id);
-    item.count = 0;
-    subtract(btn.dataset.id);
+    remove(btn.dataset.id);
     return;
   }
   if (btn.dataset.action == "subtract") {
@@ -36,14 +34,16 @@ app.addEventListener("click", (event) => {
   }
   if (btn.dataset.action == "add") {
     add(btn.dataset.id);
-    const added = setTimeout(() => {
-      btn.innerText = cartRendered ? "+" : "Add to Cart";
-    }, 700);
-    added;
     btn.innerText = "Added!";
+    setTimeout(() => {
+      if (btn.isConnected) {
+        btn.innerText = cartRendered ? "+" : "Add to Cart";
+      }
+    }, 700);
     return;
   }
   if (btn.dataset.action == "checkout") {
+    event.preventDefault();
     renderCheckout();
     return;
   }
@@ -53,26 +53,37 @@ export function addListener() {
   const cartBtn = document.getElementById("cartBtn");
   cartBtn.addEventListener("click", () => {
     // console.log(cartBtn);
-    if (cartRendered) {
-      renderProducts();
-    } else {
+    const showCart = !cartRendered;
+    if (showCart) {
       renderCart();
+    } else {
+      renderProducts();
     }
-    toggleCartRendered();
-    cartIsRendered();
+    setCartRendered(showCart);
   });
   const logoBtn = document.getElementById("logo");
   logoBtn.addEventListener("click", () => {
-    if (cartRendered) toggleCartRendered();
-    cartIsRendered();
+    setCartRendered(false);
     window.location.href = "./index.html";
   });
 
   const searchInput = document.getElementById("searchbar");
   const searchList = document.getElementById("search-list");
+  if (!searchInput || !searchList) {
+    throw new Error("Expected the search input and search list in the header");
+  }
+
+  document.addEventListener("click", (event) => {
+    if (!event.target.closest("#search")) {
+      searchList.innerHTML = "";
+    }
+  });
+
   searchList.addEventListener("click", (event) => {
-    const btn = event.target.closest("BUTTON");
-    add(btn.dataset.id);
+    if (!(event.target instanceof Element)) return;
+    const suggestionButton = event.target.closest("button[data-id]");
+    if (!suggestionButton) return;
+    add(suggestionButton.dataset.id);
   });
   searchInput.addEventListener("keyup", () => {
     const query = searchInput.value.trim().toLowerCase();
@@ -87,17 +98,20 @@ export function addListener() {
     searchList.innerHTML = matches
       .map((product) => {
         return /* html */ `
-      <li class="w-full flex justify-between bg-white border-b border-b-amazon-gray-100 px-5"><button type='button' data-id="${product.id}" class="h-20 cursor-pointer hover:text-amazon-orange">${product.name}<button><span class="text-red-700">Price: ${formatPrice(product.price)}</span></li>
+      <li class="flex w-full justify-between border-b border-b-amazon-gray-100 bg-white px-5">
+        <button type='button' data-id="${product.id}" class="h-20 cursor-pointer hover:text-amazon-orange">${product.name}</button>
+        <span class="flex items-center text-red-700">Price: ${formatPrice(product.price)}</span>
+      </li>
     `;
       })
       .join("");
   });
 }
 if (localStorage.getItem("CART-KEYS")) loadCart();
-renderHeader();
+renderHeader(cart.reduce((total, product) => total + product.count, 0));
+addListener();
 if (cartRendered) {
   renderCart();
 } else {
   renderProducts();
 }
-window.products = products;

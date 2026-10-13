@@ -1,24 +1,28 @@
-import { cart, add } from "../cart/cart";
-import { addListener } from "../main";
-
 const header = document.querySelector("header");
+if (!header) {
+  throw new Error("Expected a <header> element in index.html");
+}
 
-export const renderHeader = () => {
+export const renderHeader = (cartCount = 0) => {
   header.innerHTML = /*html*/ `
-        <div class="flex justify-between items-center h-[clamp(3.5rem,3.5rem,4rem)] min-w-full bg-amazon-blue-900">
-                <img id='logo' src='src/assets/amazon-logo-transparent-white.png' alt='AMAZON' class="h-[clamp(2rem,2.5rem,3rem)] min-w-20 py-1 px-5 mx-5  hover:outline rounded hover:outline-white hover:-translate-y-0.5 cursor-pointer">
-            <div id='search' class="relative flex justify-center items-center py-3 px-5 w-[clamp(25rem,60rem,62rem)]">
-                <input id='searchbar' class="w-[80%] h-[clamp(2.5rem,2.5rem,3rem)] bg-white text-black p-3 rounded-l outline-none" type="text" placeholder="Search Amazon">
-                <button class="bg-amazon-orange-faded h-[clamp(2.5rem,2.5rem,3rem)] w-12 bg-[url(src/assets/search-icon.png)] bg-center bg-size-[80%] bg-no-repeat rounded-r hover:bg-amazon-orange-hover cursor-pointer"></button>
-                <ol id='search-list' class="absolute w-[80%] max-h-fit top-full">
+        <div class="flex min-w-full items-center justify-between h-[clamp(3.5rem,3.5rem,4rem)] bg-amazon-blue-900">
+                <img id='logo' src='src/assets/amazon-logo-transparent-white.png' alt='AMAZON' class="h-[clamp(2rem,2.5rem,3rem)] min-w-20 mx-5 rounded px-5 py-1 cursor-pointer hover:-translate-y-0.5 hover:outline hover:outline-white">
+            <div id='search' class="relative flex w-[clamp(25rem,60rem,62rem)] items-center justify-center px-5 py-3">
+                <input id='searchbar' class="w-[80%] h-[clamp(2.5rem,2.5rem,3rem)] bg-white p-3 text-black rounded-l outline-none" type="text" placeholder="Search Amazon">
+                <button class="w-12 h-[clamp(2.5rem,2.5rem,3rem)] bg-amazon-orange-faded bg-[url(src/assets/search-icon.png)] bg-center bg-size-[80%] bg-no-repeat rounded-r cursor-pointer hover:bg-amazon-orange-hover"></button>
+                <ol id='search-list' class="absolute top-full max-h-fit w-[80%]">
                 </ol>
             </div>
-            <button type='button' id='cartBtn' class="flex justify-center items-center mx-5 hover:outline rounded hover:outline-white cursor-pointer hover:-translate-y-0.5">
-                <div class="flex justify-center items-start px-5 h-[clamp(2.5rem,2.5rem,3rem)] w-15 bg-[url(src/assets/nav-sprite-cart.png)] bg-no-repeat bg-center bg-size-[80%] text-amazon-orange text-left">${cart.reduce((t, v) => t + v.count, 0)}</div>
-                <span class="text-white p-0 mt-auto -translate-x-3">Cart</span>
+            <button type='button' id='cartBtn' class="mx-5 flex items-center justify-center rounded cursor-pointer hover:-translate-y-0.5 hover:outline hover:outline-white">
+                <div id="cart-count" class="flex w-15 h-[clamp(2.5rem,2.5rem,3rem)] items-start justify-center bg-[url(src/assets/nav-sprite-cart.png)] bg-center bg-size-[80%] bg-no-repeat px-5 text-left text-amazon-orange">${cartCount}</div>
+                <span class="mt-auto -translate-x-3 p-0 text-white">Cart</span>
             </button>
             
         </div>
         `;
-  addListener();
+};
+
+export const updateCartButton = (cartCount) => {
+  const cartCountElement = header.querySelector("#cart-count");
+  if (cartCountElement) cartCountElement.textContent = cartCount;
 };
